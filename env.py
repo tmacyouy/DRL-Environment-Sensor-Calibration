@@ -22,7 +22,9 @@ from scipy.stats import wasserstein_distance
 from collections import defaultdict
 from keras.models import load_model
 import time
-
+'''
+Define the sensor belief evolution environment and the DQN agent
+'''
 class sensorbelief(gym.Env):
 
     def __init__(self):
@@ -1187,60 +1189,3 @@ class DQN():
         act = np.array([0, 1, action])
         return np.random.choice(act, p=[(eph / 2), (eph / 2), (1 - eph)])
 
-#Test the agent on Cartpole-v0 problem on openAI
-
-env = sensorbelief()
-
-
-# get the number of observation and number of actions
-actions = env.action_space.shape[0]
-states = env.observation_space.shape[0]
-
-
-#create an instance of the DQN agent
-agent = DQN(states, actions)
-
-
-total_episodes = 7000
-eph = 0.9 #ephsilon
-eph_min = 0.01
-decay = 0.995 #decay for ephsilon
-max_time_steps=5
-
-count =0
-epsisode_rewards=[]
-
-for episodes in range(total_episodes):
-    print('Episodes',episodes)
-    star_line = time.time()
-    env.reset()
-    current_state = env.state
-#    print('init',type(current_state),current_state.shape) 
-    total_reward = 0
-
-    for steps in range(max_time_steps):
-        print('Steps',steps)
-        if count == 0:
-            action = random.choice(env.action_space)
-        else:
-            action = agent.action_select(current_state,eph)
-        next_state , reward  = env.step(action)
-#        print('aaa',type(next_state),next_state.shape) 
-        if not(np.isnan(reward)):
-            total_reward+=reward
-            agent.push([current_state, reward, action, next_state]) #push to memory
-            current_state = next_state
-        else:
-            print('error')   
-            exit(0)
-#        print('bbb',type(current_state),current_state.shape) 
-        if count > agent.batch_size:
-            agent.learn(count)
-        count+=1
-        if eph > eph_min:
-            eph*=decay
-    epsisode_rewards.append(total_reward)
-    end_line = time.time()
-    print('[Linterp]: dutation: ', end_line-star_line)
-    print("Episode: ",episodes,"Reward: ",total_reward,"Average: ", np.mean(epsisode_rewards))
-print('solved after ',episodes,' episodes')
