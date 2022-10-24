@@ -1,0 +1,29 @@
+function [model] = HMM_initiate(O_all,N)
+% learn HMM parameters using EM
+%
+% input:
+%   O_all:  1 x seqNum cell, each is a
+%               1 x T, observed sequence, with M symbols (1,..,M)
+%   N:      number of hidden states
+%
+% output:
+%   model:      a model, which contains the following estimated parameters
+%       A:          N x N, transition matrix, a_ij = Prb(q_j|q_i)
+%       B:          N x M, emission matrix, b_ij = Prb(o_j|q_i)
+%       P:          N x 1, prior probabilities
+%   log_like:   log likelihood of each iteration
+
+T = length(O_all);
+M = max(O_all);     % assume all symbols have occured at least once
+conv_prec = 1e-6;
+max_iter = 1000;
+
+s = rand(N,1)+eps; s = s/sum(s);
+A = rand(N,N)+eps; A = bsxfun(@times,A,1./sum(A,2));
+E = rand(N,M)+eps; E = bsxfun(@times,E,1./sum(E,2));
+
+
+
+model.A = A;
+model.E = E;
+model.s = s;
