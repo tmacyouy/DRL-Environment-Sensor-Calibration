@@ -1,0 +1,279 @@
+clear all
+
+load('Data1022.mat');
+tz22=Data1022;
+del_tem=tz22.delta_temperature;%%%%%hidden state
+zero=tz22.Zero;%%%%%hidden state
+Yt=tz22.lp8_co2;%%%%%¹Û²âÐòÁÐ
+
+for i=1:length(Yt)
+    if(tz22.lp8_co2(i)>600)
+        Yt(i)=600;
+    end
+    if(tz22.lp8_co2(i)<300)
+        Yt(i)=300;
+    end
+    if(tz22.Zero(i)<12400)
+        zero(i)=12400;
+    end
+    if(tz22.Zero(i)>13000)
+        zero(i)=13000;
+    end
+end
+
+% zero=zero(10041:16256);
+% Yt=Yt(10041:16256);
+
+Yt=Yt-min(Yt)+1;
+
+N_t=length(Yt);
+
+for i=1:N_t
+    if(zero(i)<12480)
+        zeros(i)=12450;
+    end
+    if(zero(i)>=12480 && zero(i)<12500)
+        zeros(i)=12490;
+    end
+    if(zero(i)>=12500 && zero(i)<12520)
+        zeros(i)=12510;
+    end
+    if(zero(i)>=12520 && zero(i)<12540)
+        zeros(i)=12530;
+    end
+    if(zero(i)>=12540 && zero(i)<12560)
+        zeros(i)=12550;
+    end
+    if(zero(i)>=12560 && zero(i)<12580)
+        zeros(i)=12570;
+    end
+    if(zero(i)>=12580 && zero(i)<12600)
+        zeros(i)=12590;
+    end
+    if(zero(i)>=12600 && zero(i)<12620)
+        zeros(i)=12610;
+    end
+    if(zero(i)>=12620 && zero(i)<12640)
+        zeros(i)=12630;
+    end
+    if(zero(i)>=12640 && zero(i)<12660)
+        zeros(i)=12650;
+    end
+    if(zero(i)>=12660 && zero(i)<12680)
+        zeros(i)=12670;
+    end
+    if(zero(i)>=12680 && zero(i)<12700)
+        zeros(i)=12690;
+    end
+    if(zero(i)>=12700 && zero(i)<12720)
+        zeros(i)=12710;
+    end
+    if(zero(i)>=12720 && zero(i)<12740)
+        zeros(i)=12730;
+    end
+    if(zero(i)>=12740 && zero(i)<12760)
+        zeros(i)=12750;
+    end
+    
+    if(zero(i)>=12760 && zero(i)<12790)
+        zeros(i)=12775;
+    end
+    if(zero(i)>=12790 && zero(i)<12820)
+        zeros(i)=12805;
+    end
+    if(zero(i)>=12820 && zero(i)<12850)
+        zeros(i)=12835;
+    end
+    if(zero(i)>=12850 && zero(i)<12880)
+        zeros(i)=12865;
+    end
+    if(zero(i)>=12880 && zero(i)<12910)
+        zeros(i)=12895;
+    end
+    if(zero(i)>=12910 && zero(i)<12940)
+        zeros(i)=12925;
+    end
+    if(zero(i)>=12940 && zero(i)<12970)
+        zeros(i)=12955;
+    end
+    if(zero(i)>=12970)
+        zeros(i)=12985;
+    end
+end
+
+% for i=1:N_t
+%     if(zero(i)<12450)
+%         zero(i)=1;
+%         zeros(i)=12425;
+%     end
+%     if(zero(i)<12500 && zero(i)>=12450)
+%         zero(i)=2;
+%         zeros(i)=12475;
+%     end
+%     if(zero(i)<12550 && zero(i)>=12500)
+%         zero(i)=3;
+%         zeros(i)=12525;
+%     end
+%     if(zero(i)<12600 && zero(i)>=12550)
+%         zero(i)=4;
+%         zeros(i)=12575;
+%     end
+%     if(zero(i)<12650 && zero(i)>=12600)
+%         zero(i)=5;
+%         zeros(i)=12625;
+%     end
+%     if(zero(i)<12700 && zero(i)>=12650)
+%         zero(i)=6;
+%         zeros(i)=12675;
+%     end
+%     if(zero(i)<12750 && zero(i)>=12700)
+%         zero(i)=7;
+%         zeros(i)=12725;
+%     end
+%     if(zero(i)<12800 && zero(i)>=12750)
+%         zero(i)=8;
+%         zeros(i)=12775;
+%     end
+%     if(zero(i)<12850 && zero(i)>=12800)
+%         zero(i)=9;
+%         zeros(i)=12825;
+%     end
+%     if(zero(i)>=12850)
+%         zero(i)=10;
+%         zeros(i)=12875;
+%     end
+% end
+
+for i=1:N_t
+    if(del_tem(i)>0.2)
+        del_tem(i)=0.3;
+    end
+    if(del_tem(i)<-0.2)
+        del_tem(i)=-0.3;
+    end
+    if(del_tem(i)<=0.2 && del_tem(i)>=-0.2)
+        del_tem(i)=0;
+    end
+end
+
+
+tic;
+% random
+% for iter=1:1000
+%     for k=1:8
+%         Yt=Yt1(720*(k-1)+1:720*(k-1)+3000);
+%         [init] = HMM_initiate(Yt',N);
+%         [model,log_like] = hmmEm(Yt',init);
+%         llr(1,k)=llr(1,k)+length(log_like);
+%         if(iter==1)
+%             if(k==1)
+%                 likely1=log_like;
+%             end
+%             if(k==2)
+%                 likely2=log_like;
+%             end
+%             if(k==3)
+%                 likely3=log_like;
+%             end
+%             if(k==4)
+%                 likely4=log_like;
+%             end
+%             if(k==5)
+%                 likely5=log_like;
+%             end
+%             if(k==6)
+%                 likely6=log_like;
+%             end
+%             if(k==7)
+%                 likely7=log_like;
+%             end
+%             if(k==8)
+%                 likely8=log_like;
+%             end
+%         end
+%             
+%     end
+% end
+% llr=llr/iter;
+
+%% unrandom
+for iter=1:2
+    for k=1:8
+        Yt=Yt1(720*(k-1)+1:720*(k-1)+3000);
+        %Yt=Yt1(1:3000);
+%         T=table(Yt');
+%         O_seq=table2cell(T);
+        if(k==1)
+            [init] = HMM_initiate(Yt',N);
+            [model,log_like] = hmmEm(Yt',init);
+        end
+        if(k~=1)
+            temp=model;
+            [model,log_like] = hmmEm(Yt',model);
+            if(any(log_like==0))
+                log_like=1:30;
+                [model] = temp;
+            end
+        end
+        if(length(log_like)==5000)
+            llr(1,k)=llr(1,k);
+        else
+            llr(1,k)=llr(1,k)+length(log_like);
+        end
+        if(iter==1)
+            if(k==1)
+                likely1=log_like;
+            end
+            if(k==2)
+                likely2=log_like;
+            end
+            if(k==3)
+                likely3=log_like;
+            end
+            if(k==4)
+                likely4=log_like;
+            end
+            if(k==5)
+                likely5=log_like;
+            end
+            if(k==6)
+                likely6=log_like;
+            end
+            if(k==7)
+                likely7=log_like;
+            end
+            if(k==8)
+                likely8=log_like;
+            end
+        end
+%         if(iter==2)
+%             if(k==1)
+%                 likely11=log_like;
+%             end
+%             if(k==2)
+%                 likely22=log_like;
+%             end
+%             if(k==3)
+%                 likely33=log_like;
+%             end
+%             if(k==4)
+%                 likely44=log_like;
+%             end
+%             if(k==5)
+%                 likely55=log_like;
+%             end
+%             if(k==6)
+%                 likely66=log_like;
+%             end
+%             if(k==7)
+%                 likely77=log_like;
+%             end
+%             if(k==8)
+%                 likely88=log_like;
+%             end
+%         end
+            
+    end
+end
+llr=llr/iter;
+toc;
